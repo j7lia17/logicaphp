@@ -15,3 +15,4 @@ if( $mediaFinal >= 7)
   { echo ' Você está em recuperaçao com a media ' . $mediaFinal;}
 else
 { echo ' Você está reprovado com a média ' . $mediaFinal;}
+
