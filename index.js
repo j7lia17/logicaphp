@@ -18,6 +18,8 @@ app.get('/contato', (req, res)=> {
 app.post('/usuario', (req, res)=> {
     const nome = req.body.nome
     const cargo = req.body.cargo
+
+    produtos.push()
     res.send("Usuário " + nome + " criado com sucesso! O seu cargo é " + cargo + ".")
 })
 
