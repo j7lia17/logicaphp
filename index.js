@@ -1,29 +1,21 @@
-const express = require('express') 
+const express = require('express')
 const app = express()
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send("Bem-vindo ao servidor Express!")
+
+let produtos = []
+
+app.post('/produtos', (req, res)=> {
+    const produto = {
+     nome: req.body.nome,
+     preco: req.body.preco,
+     quantidade: req.body.quantidade
+    }
+    produtos.push(produto)
+    res.send("O produto que você deseja é: " + nome + " ,que está custando apenas " + preco + " reais." )
 })
 
-app.get('/sobre', (req, res) => {
-    res.send("Este é um projeto de exemplo com rotas.")
-})
-
-app.get('/contato', (req, res)=> {
-    res.send("Entre em contato pelo e-mail: juliadoboco070@email.com")
-})
-
-app.post('/usuario', (req, res)=> {
-    const nome = req.body.nome
-    const cargo = req.body.cargo
-
-    produtos.push()
-    res.send("Usuário " + nome + " criado com sucesso! O seu cargo é " + cargo + ".")
-})
-
-
-app.listen(3001,()=>{
-    console.log('servidor rodando em http://localhost:3001')
+app.listen(3000,()=>{
+    console.log('servidor rodando em http://localhost:3000')
 })
