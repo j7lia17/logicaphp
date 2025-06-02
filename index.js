@@ -1,50 +1,70 @@
-const express = require('express');
-const mysql = require('mysql2');
+const express = require('express')
+const conexao = require('./db/conexao')
+const app = express()
 
-const app = express();
+app.use(express.json())
 
-app.use(express.json());
 
-const conexao = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'consultorio_medico'
+
+app.post('/produtos', (req, res) => {
+    const { nome, preco, quantidade } = req.body
+
+    conexao.query(
+        'INSERT INTO produtos (nome, preco, quantidade) VALUES (?,?,?)',
+        [
+            nome,
+            preco, 
+            quantidade, 
+        ],
+        () => {
+            res.status(201).send('Produto cadastrada com sucesso!')
+    })
+})
+
+app.delete('/produtos/:id', (req, res) => {
+  const { id } = req.params;
+
+  conexao.query('DELETE FROM produtos WHERE id = ?', [id], (err, results) => {
+    if (err) {
+        return res.status(500).send('Erro ao deletar');
+    }
+    if (results.affectedRows === 0) {
+        return res.status(404).send('Produto não encontrado');
+    }
+
+    res.status(200).send('Produto deletado com sucesso');
+  });
 });
 
-const consultas = []
+app.put('/produtos/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, preco, quantidade } = req.body;
 
-app.post('/consultas', (req, res) => {
-    const consulta = {
-        paciente: req.body.paciente,
-        medico: req.body.medico,
-        especialidade: req.body.especialidade,
-        data: req.body.data,
-        horario: req.body.horario,
-        observacoes: req.body.observacoes
-}
-
-conexao.query(
-    'INSERT INTO consultas (paciente, medico, especialidade, data, horario, observacoes) VALUES (?, ?, ?, ?, ?, ?)',
-    [consulta.paciente, consulta.medico, consulta.especialidade, consulta.data, consulta.horario, consulta.observacoes],
-   ()=> {
-        res.status(201).send('Consulta agendada com sucesso!')
+  const query = 'UPDATE produtos SET nome = ?, preco = ?, quantidade = ? WHERE id = ?';
+  conexao.query(query, [nome, preco, quantidade, id], (err, results) => {
+    if (err) {
+        return res.status(500).send('Erro ao atualizar');
     }
-);
 
+    if (results.affectedRows === 0) {
+        return res.status(404).send('Produto não encontrado');
+    }
+    
+    res.send('Produto atualizado com sucesso');
+  });
+});
+
+app.get('/produtos', (req, res) => {
+    conexao.query('SELECT * FROM  produtos', (err, results) => {
+        if (err) {
+            res.status(500).send('Erro ao buscas produtos')
+        }
+
+        res.status(200).send(results)
+    })
 })
 
 
-
-app.get('/consultas', (req, res) => {
-    conexao.query('SELECT * FROM consultas', (err, results) => {
-        if(err) {
-            return res.status(500).send('Erro ao buscar cadastros');
-        }
-        res.status(200).send(results); 
-    });
-});
-
 app.listen(3000, () => {
     console.log("Servidor backend rodando em http://localhost:3000")
-});
+})
